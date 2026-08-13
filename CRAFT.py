@@ -744,8 +744,12 @@ def handle_unknown(message):
         # Already handled in main handler
         pass
 
-# ============= START BOT =============
-def start_polling():
+# ============= WEB SERVER & START BOT =============
+@app.route('/')
+def home():
+    return "Bot is active and running!", 200
+
+def run_bot():
     while True:
         try:
             bot.remove_webhook()
@@ -755,5 +759,9 @@ def start_polling():
 
 if __name__ == "__main__":
     print("🚀 Bot started successfully!")
-    threading.Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), use_reloader=False)).start()
-    start_polling()
+    import threading
+    threading.Thread(target=run_bot, daemon=True).start()
+    
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
+    
