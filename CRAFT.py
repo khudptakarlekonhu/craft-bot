@@ -745,8 +745,9 @@ def handle_unknown(message):
         pass
 
 # ============= WEB SERVER & START BOT =============
+@app.route('/status')
 @app.route('/')
-def home():
+def bot_ping_status():
     return "Bot is active and running!", 200
 
 def run_bot():
@@ -756,6 +757,8 @@ def run_bot():
             bot.polling(non_stop=True, skip_pending=True)
         except Exception as e:
             print(f"Error in bot polling: {e}")
+            import time
+            time.sleep(3)
 
 if __name__ == "__main__":
     print("🚀 Bot started successfully!")
