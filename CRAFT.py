@@ -748,12 +748,12 @@ def handle_unknown(message):
 def start_polling():
     while True:
         try:
-            bot.polling(non_stop=True)
+            bot.remove_webhook()
+            bot.polling(non_stop=True, skip_pending=True)
         except Exception as e:
             print(f"Error in bot polling: {e}")
 
 if __name__ == "__main__":
     print("🚀 Bot started successfully!")
-    threading.Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))).start()
+    threading.Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), use_reloader=False)).start()
     start_polling()
-    
