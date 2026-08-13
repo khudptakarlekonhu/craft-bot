@@ -1,12 +1,20 @@
 import telebot
+import os
 import requests
 import json
 import re
-import threading
 import time
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-import os
+from datetime import datetime
+from telebot.types import ReplyKeyboardMarkup
+from flask import Flask
+import threading
 
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is running..."
+    
 # Bot Token
 BOT_TOKEN = "8897824915:AAERz48H8DjZku15MhDOSd8c739Qd8T528w"
 bot = telebot.TeleBot(BOT_TOKEN)
@@ -736,6 +744,16 @@ def handle_unknown(message):
         # Already handled in main handler
         pass
 
-# ============== START BOT ==============
+# ============= START BOT =============
+def start_polling():
+    while True:
+        try:
+            bot.polling(non_stop=True)
+        except Exception as e:
+            print(f"Error in bot polling: {e}")
+
 if __name__ == "__main__":
     print("🚀 Bot started successfully!")
+    threading.Thread(target=lambda: app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))).start()
+    start_polling()
+    
