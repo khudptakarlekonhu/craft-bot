@@ -21,6 +21,8 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 # API Endpoint
 API_URL = "https://flw-api-free-fire-max.vercel.app/follow"
+UNFOLLOW_API_URL = "https://flw-api-free-fire-max.vercel.app/unfollow"
+
 
 # Store user data
 user_data = {}
@@ -28,11 +30,12 @@ user_data = {}
 # ============== MAIN REPLY KEYBOARD ==============
 def main_keyboard():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
-    keyboard.row("🔴 𝙏𝙊𝙆𝙀𝙉 𝘼𝘿𝘿", "🔴 𝙁𝙊𝙇𝙇𝙊𝙒 𝙎𝙀𝙉𝘿")
-    keyboard.row("🔴 𝙏𝙊𝙆𝙀𝙉 𝘾𝙃𝙆", "🔴 𝘿𝙀𝙇𝙀𝙏𝙀 𝘼𝙇𝙇")
-    keyboard.row("🔴 𝙈𝙔 𝘼𝘾𝘾𝙊𝙐𝙉𝙏𝙎", "🔴 𝙃𝙀𝙇𝙋")
-    keyboard.row("🔴 𝘼𝘽𝙊𝙐𝙏")
+    keyboard.row("🔴 TOKEN ADD", "🔴 FOLLOW SEND")
+    keyboard.row("🔴 UNFOLLOW SEND", "🔴 TOKEN CHK")
+    keyboard.row("🔴 DELETE ALL", "🔴 MY ACCOUNTS")
+    keyboard.row("🔴 HELP", "🔴 ABOUT")
     return keyboard
+    
 
 # ============== REGION REPLY KEYBOARD ==============
 def region_keyboard():
@@ -736,7 +739,79 @@ def process_follow_batch(accounts, target_uid, region, status_msg, message):
             pass
     
     return results
+# ============= UNFOLLOW FEATURE =============
+@bot.message_handler(func=lambda message: message.text == "🔴 UNFOLLOW SEND")
+def unfollow_send(message):
+    user_id = message.chat.id
+    if user_id not in user_data or "accounts" not in user_data[user_id]:
+        bot.reply_to(
+            message, 
+            "❌ *NO ACCOUNTS FOUND!*\n\n⚠️ Please add accounts first using:\n🔴 TOKEN ADD", 
+            parse_mode='Markdown', 
+            reply_markup=main_keyboard()
+        )
+        return
 
+    user_data[user_id]["state"] = "awaiting_unfollow_uid"
+    bot.reply_to(
+        message, 
+        "🔻 *UNFOLLOW SETUP*\n\n📝 *Send Target UID to Unfollow:*", 
+        parse_mode='Markdown'
+    )
+
+@bot.message_handler(func=lambda message: user_data.get(message.chat.id, {}).get("state") == "awaiting_unfollow_uid")
+def process_unfollow_target(message):
+    user_id = message.chat.id
+    target_uid = message.text.strip()
+    
+    if not target_uid.isdigit():
+        bot.reply_to(message, "❌ *Invalid UID!* Please send a valid numeric UID.")
+        return
+
+    user_data[user_id]["state"] = None
+    status_msg = bot.reply_to(message, "⏳ *Processing Unfollow Request...*", parse_mode='Markdown')
+
+    all_accounts = []
+    for region, acc_list in user_data[user_data[user_id]["accounts"].keys() if "accounts" in user_data[user_id] else []]:
+        pass
+
+    all_accounts = []
+    for region, acc_list in user_data[user_id]["accounts"].items():
+        all_accounts.extend(acc_list)
+
+    success = 0
+    failed = 0
+
+    for acc in all_accounts:
+        try:
+            payload = {
+                "uid": acc.get("uid"),
+                "password": acc.get("password"),
+                "target_uid": target_uid
+            }
+            res = requests.post(UNFOLLOW_API_URL, json=payload, timeout=10)
+            if res.status_code == 200:
+                success += 1
+            else:
+                failed += 1
+        except Exception:
+            failed += 1
+
+    result_text = f"""
+✅ *UNFOLLOW COMPLETED!*
+
+🎯 *Target UID:* `{target_uid}`
+🟢 *Successful:* `{success}`
+🔴 *Failed:* `{failed}`
+📊 *Total Tokens Used:* `{len(all_accounts)}`
+"""
+    bot.edit_message_text(
+        result_text, 
+        chat_id=user_id, 
+        message_id=status_msg.message_id, 
+        parse_mode='Markdown'
+    )
+    
 # ============== ERROR HANDLER ==============
 @bot.message_handler(func=lambda message: True)
 def handle_unknown(message):
