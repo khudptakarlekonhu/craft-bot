@@ -770,11 +770,7 @@ def process_unfollow_target(message):
 
     user_data[user_id]["state"] = None
     status_msg = bot.reply_to(message, "⏳ *Processing Unfollow Request...*", parse_mode='Markdown')
-
-    all_accounts = []
-    for region, acc_list in user_data[user_data[user_id]["accounts"].keys() if "accounts" in user_data[user_id] else []]:
-        pass
-
+    
     all_accounts = []
     for region, acc_list in user_data[user_id]["accounts"].items():
         all_accounts.extend(acc_list)
@@ -812,13 +808,6 @@ def process_unfollow_target(message):
         parse_mode='Markdown'
     )
     
-# ============== ERROR HANDLER ==============
-@bot.message_handler(func=lambda message: True)
-def handle_unknown(message):
-    if message.text and not message.text.startswith("/"):
-        # Already handled in main handler
-        pass
-
 # ============= WEB SERVER & START BOT =============
 @app.route('/status')
 @app.route('/')
@@ -836,10 +825,13 @@ def run_bot():
             time.sleep(3)
 
 if __name__ == "__main__":
-    print("🚀 Bot started successfully!")
     import threading
+    import os
+
+    # Run Bot polling in background thread
     threading.Thread(target=run_bot, daemon=True).start()
-    
+
+    # Run Flask Web Server for Render
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
     
