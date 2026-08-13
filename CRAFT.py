@@ -16,7 +16,7 @@ def home():
     return "Bot is running..."
     
 # Bot Token
-BOT_TOKEN = "8897824915:AAERz48H8DjZku15MhDOSd8c739Qd8T528w"
+BOT_TOKEN = "8897824915:AAFTyektgm4lze_n87WU3QI5rtaNb4RklmA"
 bot = telebot.TeleBot(BOT_TOKEN)
 
 # API Endpoint
