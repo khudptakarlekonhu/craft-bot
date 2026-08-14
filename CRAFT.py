@@ -607,9 +607,8 @@ def check_accounts_with_threads(accounts, region, status_msg, message):
 def process_follow_request(message, count):
     user_id = message.chat.id
     region = user_data[user_id]["follow_region"]
-     target_uid = user_data[user_id]["target"]
+    target_uid = user_data[user_id]["target"]
     accounts = user_data[user_id]["accounts"][region]
-    
     selected_accounts = accounts[:min(count, len(accounts))]
     
     if not selected_accounts:
