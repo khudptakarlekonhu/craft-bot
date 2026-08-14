@@ -14,8 +14,31 @@ bot = telebot.TeleBot(BOT_TOKEN)
 # API Endpoint
 API_URL = "https://flw-api-free-fire-max.vercel.app/follow"
 
-# Store user data
-user_data = {}
+import json
+import os
+
+DATA_FILE = "user_data.json"
+
+def load_data():
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading json: {e}")
+            return {}
+    return {}
+
+def save_data():
+    try:
+        with open(DATA_FILE, "w") as f:
+            json.dump(user_data, f, indent=4)
+    except Exception as e:
+        print(f"Error saving json: {e}")
+        
+# Store user data from file
+user_data = load_data()
+
 
 # ============== MAIN REPLY KEYBOARD ==============
 def main_keyboard():
