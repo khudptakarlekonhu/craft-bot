@@ -8,7 +8,7 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 import os
 
 # Bot Token
-BOT_TOKEN = "8897824915:AAGeDAqXVJTroWjlSpHGo9CyRLFALBrZWD8"
+BOT_TOKEN = "8695360987:AAF9m4cMFxltUeRbsDHjLg54mTCplCrCIuw"
 bot = telebot.TeleBot(BOT_TOKEN)
 
 # API Endpoint
