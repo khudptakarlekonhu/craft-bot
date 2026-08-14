@@ -6,6 +6,19 @@ import threading
 import time
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 import os
+from flask import Flask
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is running 24/7 perfectly!"
+
+def run_flask():
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
+
+threading.Thread(target=run_flask, daemon=True).start()
 
 # Bot Token
 BOT_TOKEN = "8785756271:AAF-8kyoIzJhxu6fjSGHEG9amf9xEyS-HQs"
